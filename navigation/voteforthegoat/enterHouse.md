@@ -5,7 +5,6 @@ layout: post
 title: Entering The House
 Authors: Maryam, Nora, Kushi, Joanna
 ---
-<!--<script type="module" src="{{site.baseurl}}/navigation/voteforthegoat/calico.js"></script>-->
 
 <style>
     /* Base Styles */
