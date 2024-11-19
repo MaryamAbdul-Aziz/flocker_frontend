@@ -155,16 +155,7 @@ body {
     background-color: transparent;
     }
 </style>
-<!--
- <div class="sidebar">
-        <button class="sidebar-button" data-house="Adventure Play House" data-channel-id="22" id="adventure-play-house">Adventure Play House</button>
-        <button class="sidebar-button" data-house="Sylvanian Family Restraunt House" data-channel-id="23" id="sylvanian-restaurant-house">Sylvanian Family Restraunt House</button>
-        <button class="sidebar-button" data-house="Magical Mermaid Castle House" data-channel-id="24" id="magical-mermaid-castle">Magical Mermaid Castle House</button>
-        <button class="sidebar-button" data-house="Woody School House" data-channel-id="25" id="woody-school">Woody School House</button>
-        <button class="sidebar-button" data-house="Spooky Suprise Haunted House" data-channel-id="26" id="spooky-surprise-haunted">Spooky Suprise Haunted House</button>
-        <button class="sidebar-button" data-house="Brick Oven Bakery House" data-channel-id="27" id="brick-oven-bakery">Brick Oven Bakery House</button>
-    </div>
--->
+
 <h1 id="pageTitle"></h1>
 
 <div class="content">
@@ -200,7 +191,6 @@ body {
 </div>
 
 <div id="createPostForm" class="post-container" style="display: none;">
-    <!--<textarea id="postContent" class="textarea-container" placeholder="Write something..."></textarea>-->
     <textarea id="postContent" class="textarea-container" placeholder="Write something..."></textarea>
     <input type="file" id="imageInput" accept="image/*">
     <img id="imagePreview" class="image-preview" alt="Image Preview">
@@ -223,7 +213,7 @@ body {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ section_name: "Vote for the GOAT" }) // Adjust the section name as needed
+                body: JSON.stringify({ section_name: "Vote for the GOAT" }) 
             });
             if (!response.ok) {
                 throw new Error('Failed to fetch groups: ' + response.statusText);
@@ -232,7 +222,7 @@ body {
             const groupSelect = document.getElementById('group_id');
             groups.forEach(group => {
                 const option = document.createElement('option');
-                option.value = group.name; // Use group name for payload
+                option.value = group.name; 
                 option.textContent = group.name;
                 groupSelect.appendChild(option);
             });
@@ -311,28 +301,6 @@ body {
             //console.error('Error fetching data:', error);
         }
     }
-/*
-    document.querySelectorAll('.sidebar-button').forEach(button => {
-        button.addEventListener('click', () => {
-            const houseName = button.getAttribute('data-house');
-            const channelId = button.getAttribute('value');
-            
-            // Call selectItem with the correct channel ID
-            selectItem(channelId);
-
-            // Store selected house in localStorage
-            localStorage.setItem('selectedHouse', houseName);
-            localStorage.setItem('selectedChannelId', channelId);
-
-            // Update the UI for the selected house
-            setBackground(houseName);
-            renderHousePage(houseName);
-            
-            // Fetch posts for the selected channel
-            fetchData(channelId);
-        });
-    });
-*/
 
 document.getElementById('selectionForm').addEventListener('submit', function(event) {
         event.preventDefault();
@@ -401,13 +369,6 @@ window.addEventListener('DOMContentLoaded', () => {
         const postForm = document.getElementById('postForm');
         postForm.style.display = "block";
     }
-
-    // Function Definitions for fetchGroups, fetchChannels, etc., go here
-
-    // Fetch groups when the page loads
-    //fetchGroups();
-
-    // On page load
     const groupId = "Calico Vote";
 
     document.getElementById('title').value = "Title here";
