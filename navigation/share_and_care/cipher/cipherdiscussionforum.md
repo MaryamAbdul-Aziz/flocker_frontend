@@ -4,46 +4,152 @@ title: CipherDiscussion
 search_exclude: true
 permalink: share_and_care/cipherdiscussion
 ---
-<style>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cipher Discussion</title>
+   <style>
+    /* General Styling */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #1A1A1A;
+        color: #FFD700;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+    }
+    header {
+        padding: 20px;
+        width: 100%;
+        max-width: 900px;
+        background-color: #3A0000;
+        text-align: center;
+        border-bottom: 3px solid #FF4500;
+        margin-bottom: 30px;
+    }
+    header h1 {
+        font-size: 2.5rem;
+        color: #FFD700;
+        text-shadow: 0px 2px 8px rgba(255, 69, 0, 0.6);
+    }
+    header p {
+        color: #EEE;
+        font-size: 1.1rem;
+    }
+    /* Chatroom Container */
+    .chatroom-container {
+        background-color: #660000;
+        padding: 25px;
+        border: 2px solid #FF4500;
+        margin-bottom: 30px;
+        max-width: 800px;
+        width: 100%;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+    }
+    .chatroom-container h2 {
+        color: #FFD700;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    #messages {
+        height: 250px;
+        overflow-y: auto;
+        padding: 10px;
+        background-color: #4B0000;
+        border: 1px solid #FF4500;
+        margin-bottom: 20px;
+    }
+    #username, #message {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid #FF4500;
+        background-color: #330000;
+        color: #FFD700;
+    }
+    .message-form button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        background-color: #FF4500;
+        color: #FFF;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .message-form button:hover {
+        background-color: #FF6347;
+    }
+    /* Form Container */
     .container {
         display: flex;
         justify-content: center;
         width: 100%;
-        max-width: 1200px;
-        padding: 20px;
-        box-sizing: border-box;
+        max-width: 800px;
+        margin-bottom: 30px;
     }
     .form-container {
-        display: flex;
-        flex-direction: column;
-        max-width: 800px;
+        background-color: #660000;
+        padding: 25px;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
         width: 100%;
-        background-color: #2c3e50;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        color: #ecf0f1;
+        border: 2px solid #FF4500;
     }
     .form-container label {
-        margin-bottom: 5px;
+        color: #FFD700;
+        font-weight: bold;
+        margin-top: 10px;
     }
-    .form-container input, .form-container textarea, .form-container select {
-        margin-bottom: 10px;
-        padding: 10px;
-        border-radius: 5px;
-        border: none;
+    .form-container input,
+    .form-container textarea,
+    .form-container select {
         width: 100%;
+        padding: 12px;
+        margin-top: 10px;
+        border: 1px solid #FF4500;
+        background-color: #330000;
+        color: #FFD700;
     }
     .form-container button {
-        padding: 10px;
-        border-radius: 5px;
+        width: 100%;
+        padding: 12px;
+        margin-top: 15px;
         border: none;
-        background-color: #34495e;
-        color: #ecf0f1;
+        background-color: #FF4500;
+        color: #FFF;
         cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+    .form-container button:hover {
+        background-color: #FF6347;
+    }
+    /* Data Display Area */
+    .data {
+        background-color: #660000;
+        padding: 25px;
+        border: 2px solid #FF4500;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+        margin-top: 20px;
+        max-width: 800px;
+        width: 100%;
+    }
+    .post-item {
+        background-color: #4B0000;
+        border: 1px solid #FF4500;
+        padding: 15px;
+        margin-bottom: 15px;
     }
 </style>
+</head>
+<header>
+    <h1>Welcome to the Underground Vibes!</h1>
+    <p>Chat with others in real-time!</p>
 
+</header>
 <div class="container">
     <div class="form-container">
         <h2>Select Group and Channel</h2>
@@ -100,7 +206,7 @@ permalink: share_and_care/cipherdiscussion
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ section_name: "Shared Interest" }) // Adjust the section name as needed
+                body: JSON.stringify({ section_name: "Share and Care" }) // Adjust the section name as needed
             });
             if (!response.ok) {
                 throw new Error('Failed to fetch groups: ' + response.statusText);
@@ -122,33 +228,37 @@ permalink: share_and_care/cipherdiscussion
      * Fetch channels based on selected group
      * User picks from dropdown
      */
-    async function fetchChannels(groupName) {
-        try {
-            const response = await fetch(`${pythonURI}/api/channels/filter`, {
-                ...fetchOptions,
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ group_name: groupName })
-            });
-            if (!response.ok) {
-                throw new Error('Failed to fetch channels: ' + response.statusText);
-            }
-            const channels = await response.json();
-            const channelSelect = document.getElementById('channel_id');
-            channelSelect.innerHTML = '<option value="">Select a channel</option>'; // Reset channels
-            channels.forEach(channel => {
-                const option = document.createElement('option');
-                option.value = channel.id;
-                option.textContent = channel.name;
-                channelSelect.appendChild(option);
-            });
-        } catch (error) {
-            console.error('Error fetching channels:', error);
+async function fetchChannels(groupName) {
+    try {
+        console.log("Fetching channels for group:", groupName);
+        const response = await fetch(`${pythonURI}/api/channels/filter`, {
+            ...fetchOptions,
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ group_name: groupName })
+        });
+        
+        if (!response.ok) {
+            console.error('Failed to fetch channels:', response.statusText);
+            return;
         }
+        
+        const channels = await response.json();
+        console.log("Fetched channels:", channels);
+        
+        const channelSelect = document.getElementById('channel_id');
+        channelSelect.innerHTML = '<option value="">Select a channel</option>'; // Reset
+        
+        channels.forEach(channel => {
+            const option = document.createElement('option');
+            option.value = channel.id;
+            option.textContent = channel.name;
+            channelSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error fetching channels:', error);
     }
-
+}
     /**
       * Handle group selection change
       * Channel Dropdown refresh to match group_id change
@@ -273,6 +383,7 @@ permalink: share_and_care/cipherdiscussion
         }
     }
 
-    // Fetch groups when the page loads
+    // Fetch groups wh en the page loads
     fetchGroups();
 </script>
+  

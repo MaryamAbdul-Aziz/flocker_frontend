@@ -163,32 +163,6 @@ permalink: /undgdmusic/
     <p>Chat with others in real-time!</p>
 
 </header>
-
-<div class="chatroom-container">
-    <h2>Flocker Chatroom</h2>
-    <div class="chat-area" id="messages">
-        <!-- Messages will appear here -->
-    </div>
-    <form class="message-form" id="chat-form">
-        <input type="text" id="username" placeholder="Your Name" required>
-        <input type="text" id="message" placeholder="Type a message..." maxlength="200" required>
-        <button type="submit">Send</button>
-    </form>
-</div>
-
-<script type="module">
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('chat-form').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const username = document.getElementById('username').value || "Anonymous";
-            const message = document.getElementById('message').value;
-            const timestamp = new Date().toLocaleTimeString();
-            const messageHtml = `<p><span class="username">${username}</span>: ${message} <span class="timestamp">[${timestamp}]</span></p>`;
-            document.getElementById("messages").innerHTML += messageHtml;
-            event.target.reset();
-        });
-    });
-</script>
 <div class="container">
     <div class="form-container">
         <h2>Select Group and Channel</h2>
@@ -200,6 +174,9 @@ permalink: /undgdmusic/
             <label for="channel_id">Channel:</label>
             <select id="channel_id" name="channel_id" required>
                 <option value="">Select a channel</option>
+                <option value="Artists">Artists</option>
+                <option value="Songs">Songs</option>
+                <option value="Genres">Genres</option>
             </select>
             <button type="submit">Select</button>
         </form>
@@ -229,10 +206,22 @@ permalink: /undgdmusic/
     </div>
 </div>
 
+<div class="container">
+  <div class="category-box">
+    <!-- Food and Drink Category -->
+    <div class="category-row" onclick="toggleItems('Channels')">
+      <h3>Channels</h3>
+      <div id="Channels" class="item-list-container" style="display: none;">
+        <div class="item-list">
+          <button onclick="selectItem(this, 'most', 'Artists')" data-channel-id="1">Artists</button>
+          <button onclick="selectItem(this, 'most', 'Songs')" data-channel-id="2">Songs</button>
+          <button onclick="selectItem(this, 'most', 'Genres')" data-channel-id="3">Genres</button>
+        </div>
+    </div>
+</div>
 <script type="module">
     // Import server URI and standard fetch options
     import { pythonURI, fetchOptions } from '{{ site.baseurl }}/assets/js/api/config.js';
-
     /**
      * Fetch groups for dropdown selection
      * User picks from dropdown
@@ -262,7 +251,6 @@ permalink: /undgdmusic/
             console.error('Error fetching groups:', error);
         }
     }
-
     /**
      * Fetch channels based on selected group
      * User picks from dropdown
@@ -276,18 +264,14 @@ async function fetchChannels(groupName) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ group_name: groupName })
         });
-        
         if (!response.ok) {
             console.error('Failed to fetch channels:', response.statusText);
             return;
         }
-        
         const channels = await response.json();
         console.log("Fetched channels:", channels);
-        
         const channelSelect = document.getElementById('channel_id');
         channelSelect.innerHTML = '<option value="">Select a channel</option>'; // Reset
-        
         channels.forEach(channel => {
             const option = document.createElement('option');
             option.value = channel.id;
@@ -310,7 +294,6 @@ async function fetchChannels(groupName) {
             document.getElementById('channel_id').innerHTML = '<option value="">Select a channel</option>'; // Reset channels
         }
     });
-
     /**
      * Handle form submission for selection
      * Select Button: Computer fetches and displays posts
@@ -325,26 +308,22 @@ async function fetchChannels(groupName) {
             alert('Please select both group and channel.');
         }
     });
-
     /**
      * Handle form submission for adding a post
      * Add Form Button: Computer handles form submission with request
      */
     document.getElementById('postForm').addEventListener('submit', async function(event) {
         event.preventDefault();
-
         // Extract data from form
         const title = document.getElementById('title').value;
         const comment = document.getElementById('comment').value;
         const channelId = document.getElementById('channel_id').value;
-
         // Create API payload
         const postData = {
             title: title,
             comment: comment,
             channel_id: channelId
         };
-
         // Trap errors
         try {
             // Send POST request to backend, purpose is to write to database
@@ -356,11 +335,9 @@ async function fetchChannels(groupName) {
                 },
                 body: JSON.stringify(postData)
             });
-
             if (!response.ok) {
                 throw new Error('Failed to add post: ' + response.statusText);
             }
-
             // Successful post
             const result = await response.json();
             alert('Post added successfully!');
@@ -372,7 +349,6 @@ async function fetchChannels(groupName) {
             alert('Error adding post: ' + error.message);
         }
     });
-
     /**
      * Fetch posts based on selected channel
      * Handle response: Fetch and display posts
@@ -390,20 +366,15 @@ async function fetchChannels(groupName) {
             if (!response.ok) {
                 throw new Error('Failed to fetch posts: ' + response.statusText);
             }
-
             // Parse the JSON data
             const postData = await response.json();
-
             // Extract posts count
             const postCount = postData.length || 0;
-
             // Update the HTML elements with the data
             document.getElementById('count').innerHTML = `<h2>Count ${postCount}</h2>`;
-
             // Get the details div
             const detailsDiv = document.getElementById('details');
             detailsDiv.innerHTML = ''; // Clear previous posts
-
             // Iterate over the postData and create HTML elements for each item
             postData.forEach(postItem => {
                 const postElement = document.createElement('div');
@@ -416,12 +387,10 @@ async function fetchChannels(groupName) {
                 `;
                 detailsDiv.appendChild(postElement);
             });
-
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     }
-
     // Fetch groups when the page loads
     fetchGroups();
 </script>
@@ -824,3 +793,146 @@ async function fetchChannels(groupName) {
         chatWindow.scrollTop = chatWindow.scrollHeight;
     }
 </script>
+
+<!-- Now Playing Section -->
+<div class="now-playing">
+    <h3>Now Playing</h3>
+    <div id="song-info">
+        <p><strong>Title:</strong> <span id="song-title">Loading...</span></p>
+        <p><strong>Artist:</strong> <span id="song-artist">Loading...</span></p>
+    </div>
+    <div id="player"></div>
+    <div class="controls">
+        <button onclick="prevSong()">⏮️ Previous</button>
+        <button onclick="playPause()">⏯️ Play/Pause</button>
+        <button onclick="nextSong()">⏭️ Next</button>
+    </div>
+</div>
+
+<style>
+    /* Now Playing Section Styling */
+    .now-playing {
+        position: fixed;
+        bottom: 100px;
+        right: 20px;
+        width: 300px;
+        background-color: #1A1A1A;
+        color: #FFD700;
+        border: 2px solid #FFD700;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        font-family: Arial, sans-serif;
+    }
+    .now-playing h3 {
+        margin: 0 0 10px 0;
+        color: #FFD700;
+        text-align: center;
+    }
+    #song-info p {
+        margin: 5px 0;
+    }
+    #player {
+        margin-top: 10px;
+    }
+    .controls {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+    .controls button {
+        background-color: #FFD700;
+        color: #000;
+        border: none;
+        border-radius: 5px;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+    .controls button:hover {
+        background-color: #FFC700;
+    }
+</style>
+
+<script>
+    // List of YouTube videos with real song titles and artist names
+    const songs = [
+        {
+            title: "Dead Batteries",
+            artist: "Astrophysics",
+            videoId: "L0yzW9t2ixk" // Extracted from YouTube URL
+        },
+        {
+            title: "Miss U",
+            artist: "Watafami",
+            videoId: "wjDtTv0n0Fw" // Extracted from YouTube URL
+        },
+        {
+            title: "Galaxy 2002",
+            artist: "Astrophysics",
+            videoId: "-1TjqZC3TXo" // Extracted from YouTube URL
+        }
+    ];
+
+    let currentSongIndex = 0;
+    let player;
+
+    // Load the YouTube IFrame API
+    function onYouTubeIframeAPIReady() {
+        player = new YT.Player('player', {
+            height: '0',  // Hidden initially
+            width: '0',
+            videoId: songs[currentSongIndex].videoId,
+            events: {
+                'onReady': onPlayerReady,
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    }
+
+    function onPlayerReady(event) {
+        loadSong(currentSongIndex);
+    }
+
+    function onPlayerStateChange(event) {
+        if (event.data === YT.PlayerState.ENDED) {
+            nextSong(); // Auto play next song
+        }
+    }
+
+    function loadSong(index) {
+        const song = songs[index];
+        document.getElementById('song-title').innerText = song.title;
+        document.getElementById('song-artist').innerText = song.artist;
+        player.loadVideoById(song.videoId);
+        player.playVideo();
+    }
+
+    function playPause() {
+        const playerState = player.getPlayerState();
+        if (playerState === YT.PlayerState.PLAYING) {
+            player.pauseVideo();
+        } else {
+            player.playVideo();
+        }
+    }
+
+    function nextSong() {
+        currentSongIndex = (currentSongIndex + 1) % songs.length;
+        loadSong(currentSongIndex);
+    }
+
+    function prevSong() {
+        currentSongIndex = (currentSongIndex - 1 + songs.length) % songs.length;
+        loadSong(currentSongIndex);
+    }
+
+    // Automatically advance to the next song when the current one ends
+    audioPlayer.addEventListener('ended', nextSong);
+</script>
+
+<!-- YouTube IFrame API Script -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
